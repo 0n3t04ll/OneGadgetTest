@@ -1,5 +1,6 @@
 # OneGadgetTest
 OneGadgetTest (ogt) is a gdb plugin to help pwner quickly check constraints of one gadget has been satisfied or not.
+This plugin is very simple and probably has some mistakes, feel free to correct it :)
 ## Requirements
 * one_gadget
 * gdb
