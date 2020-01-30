@@ -36,16 +36,16 @@ int main()
 ```
 
 Stop instruction at `call rdx`
-https://imgur.com/fB8TyYk.jpg
+![](https://imgur.com/fB8TyYk.jpg)
 
 use `ogt -8` cause of call instruction
-https://imgur.com/2TfiWcM.jpg
+![](https://imgur.com/2TfiWcM.jpg)
 
 0x10a38c constraints has been satisfied
-https://imgur.com/QyQmEqy.jpg
+![](https://imgur.com/QyQmEqy.jpg)
 
 change the foo address and get shell
-https://imgur.com/gGEIbpW.jpg
+![](https://imgur.com/gGEIbpW.jpg)
 
 ## Reference
 * [1] https://www-zeuthen.desy.de/unix/unixguide/infohtml/gdb/Python-API.html#Python-API
