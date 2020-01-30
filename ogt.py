@@ -23,14 +23,16 @@ class ogt(gdb.Command):
 
             if not self.inferior or not self.inferior.is_valid():
                 return
-        if self.frame is None:
-            try:
-                self.frame = gdb.selected_frame()
-            except RuntimeError:
-                return 
 
-            if not self.frame or not self.frame.is_valid():
-                return
+        # user may use ogt in different frame, so update everytime when
+        # user execute command
+        try:
+            self.frame = gdb.selected_frame()
+        except RuntimeError:
+            return 
+
+        if not self.frame or not self.frame.is_valid():
+            return
 
         if len(args)>  1:
             self.rsp_fix = int(args)
