@@ -11,24 +11,27 @@ class ogt(gdb.Command):
         self.libc_path = ''
         self.constraints = {}
         self.rsp_fix = 0
-
-        try:
-            self.inferior = gdb.selected_inferior()
-        except RuntimeError:
-            return
-
-        if not self.inferior or not self.inferior.is_valid():
-            return
-
-        try:
-            self.frame = gdb.selected_frame()
-        except RuntimeError:
-            return 
-
-        if not self.frame or not self.frame.is_valid():
-            return
+        self.inferior = None
+        self.frame = None
 
     def invoke(self, args, from_tty):
+        if self.inferior is None:
+            try:
+                self.inferior = gdb.selected_inferior()
+            except RuntimeError:
+                return
+
+            if not self.inferior or not self.inferior.is_valid():
+                return
+        if self.frame is None:
+            try:
+                self.frame = gdb.selected_frame()
+            except RuntimeError:
+                return 
+
+            if not self.frame or not self.frame.is_valid():
+                return
+
         if len(args)>  1:
             self.rsp_fix = int(args)
         try:

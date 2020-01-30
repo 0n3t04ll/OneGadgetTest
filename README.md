@@ -4,10 +4,23 @@ This plugin is very simple and probably has some mistakes, feel free to correct 
 ## Requirements
 * one_gadget
 * gdb
+## Installation
+```
+git clone https://github.com/0n3t04ll/OneGadgetTest.git
+cd OneGadgetTest
+echo "source `pwd`/ogt.py" >> ~/.gdbinit
+```
+
 ## Usage
-* `ogt`
+* 
+```
+$gdb ogt
+```
 	ogt command will use one_gadget to collect constraints and check the constraints has been satisfied or not.
-* `ogt <fix rsp>`
+*
+```
+$gdb ogt <fix rsp>
+``` 
 	After call instruction, rsp will minus 8 cause of push return address, `ogt -8` will plus -8 first then check constraints.
 ## Reference
 * [1] https://www-zeuthen.desy.de/unix/unixguide/infohtml/gdb/Python-API.html#Python-API
