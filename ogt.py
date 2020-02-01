@@ -109,11 +109,10 @@ class ogt(gdb.Command):
             elif op[0] == '[':
                 # seperate all the operator by hand...
                 op = op[1:-1]
-                # double dereference
+                # multiple dereference
                 # basically next procedure will take care of this case
                 if op[0] == '[':
-                    op = hex(self.__emulate_exp(op))
-                    instance.append(op)
+                    addr = self.__emulate_exp(op)
                 else:
                     subexp = []
                     for i in range(len(op)):
@@ -125,11 +124,11 @@ class ogt(gdb.Command):
                                 subexp.append(op[i:j])
                     # dereference address
                     addr = self.__emulate_exp(subexp)
-                    try:
-                        value = self.inferior.read_memory(addr, 8).tobytes()
-                        instance.append(hex(int.from_bytes(value, byteorder='little')))
-                    except gdb.MemoryError:
-                        return False
+                try:
+                    value = self.inferior.read_memory(addr, 8).tobytes()
+                    instance.append(hex(int.from_bytes(value, byteorder='little')))
+                except gdb.MemoryError:
+                    return False
         # eval('exp || exp') will get false
         while '||' in instance:
             instance[instance.index('||')] = 'or'
