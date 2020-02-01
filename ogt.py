@@ -113,6 +113,7 @@ class ogt(gdb.Command):
                 # basically next procedure will take care of this case
                 if op[0] == '[':
                     op = hex(self.__emulate_exp(op))
+                    instance.append(op)
                 else:
                     subexp = []
                     for i in range(len(op)):
@@ -122,10 +123,13 @@ class ogt(gdb.Command):
                         else:
                             if j <= len(op) or op[i:].startswith('0x'):
                                 subexp.append(op[i:j])
-                # dereference address
-                addr = self.__emulate_exp(subexp)
-                value = self.inferior.read_memory(addr, 8).tobytes()
-                instance.append(hex(int.from_bytes(value, byteorder='little')))
+                    # dereference address
+                    addr = self.__emulate_exp(subexp)
+                    try:
+                        value = self.inferior.read_memory(addr, 8).tobytes()
+                        instance.append(hex(int.from_bytes(value, byteorder='little')))
+                    except gdb.MemoryError:
+                        return False
         # eval('exp || exp') will get false
         while '||' in instance:
             instance[instance.index('||')] = 'or'
