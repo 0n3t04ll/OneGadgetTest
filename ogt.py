@@ -2,7 +2,7 @@ import gdb
 import subprocess
 
 reg = ('rsp', 'rbp', 'rax', 'rbx', 'rcx', 'rdx', 'rdi', 'rsi', 'r8', 'r9', 'r10', 'r11', 'r12', 'r13', 'r14', 'r15', 'eflags')
-operator = ('+', '-', '*', '/', '%', '==', '&', '|', '^')
+operator = ('+', '-', '*', '/', '%', '==', '&', '|', '^', '||')
 
 class ogt(gdb.Command):
     "use ogt do check if there has any one gagdet instruction can sufficient constraints"
@@ -109,19 +109,28 @@ class ogt(gdb.Command):
             elif op[0] == '[':
                 # seperate all the operator by hand...
                 op = op[1:-1]
-                subexp = []
-                for i in range(len(op)):
-                    j = i
-                    while op[i:j] not in reg and op[i:j] not in operator and op[i] != 0 and j < len(op):
-                        j += 1
-                    else:
-                        if j < len(op) or op[i:].startswith('0x'):
-                            subexp.append(op[i:j])
+                # double dereference
+                # basically next procedure will take care of this case
+                if op[0] == '[':
+                    op = hex(self.__emulate_exp(op))
+                else:
+                    subexp = []
+                    for i in range(len(op)):
+                        j = i
+                        while op[i:j] not in reg and op[i:j] not in operator and op[i] != 0 and j <= len(op):
+                            j += 1
+                        else:
+                            if j <= len(op) or op[i:].startswith('0x'):
+                                subexp.append(op[i:j])
                 # dereference address
                 addr = self.__emulate_exp(subexp)
                 value = self.inferior.read_memory(addr, 8).tobytes()
                 instance.append(hex(int.from_bytes(value, byteorder='little')))
-        eval_args = ''.join(i for i in instance)
+        # eval('exp || exp') will get false
+        while '||' in instance:
+            instance[instance.index('||')] = 'or'
+        while '&&' in instance:
+            instance[instance.index('&&')] = 'and'
+        eval_args = ''.join(i + ' ' for i in instance)
         return eval(eval_args)
-
 ogt()
