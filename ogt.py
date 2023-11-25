@@ -46,12 +46,17 @@ class ogt(gdb.Command):
         outputstr = out.decode('ascii')
         self.__parse_constraints(outputstr)
         self.__check_expression() 
+    
+    def __get_pid(self):
+        pid = gdb.execute("i proc", False, True).split('\n')[0]
+        pid = pid.split(' ')[-1]
+        return pid
 
     def __get_libc_path(self):
         if self.libc_path != '':
             return
-        pid = gdb.execute("getpid", False, True)
-        filename = "/proc/" + pid[:-1] + "/maps"
+        pid = self.__get_pid()
+        filename = "/proc/" + pid + "/maps"
         with open(filename, "r") as f:
             for ln in f:
                 # find libc path
