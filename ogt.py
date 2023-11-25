@@ -46,16 +46,21 @@ class ogt(gdb.Command):
         outputstr = out.decode('ascii')
         self.__parse_constraints(outputstr)
         self.__check_expression() 
+    
+    def __get_pid(self):
+        pid = gdb.execute("i proc", False, True).split('\n')[0]
+        pid = pid.split(' ')[-1]
+        return pid
 
     def __get_libc_path(self):
-        if self.libc_path is not '':
+        if self.libc_path != '':
             return
-        pid = gdb.execute("getpid", False, True)
-        filename = "/proc/" + pid[:-1] + "/maps"
+        pid = self.__get_pid()
+        filename = "/proc/" + pid + "/maps"
         with open(filename, "r") as f:
             for ln in f:
                 # find libc path
-                if ln.find("libc") is not -1 and ln.find("r-x") is not -1:
+                if ln.find("libc") != -1 and ln.find("r-x") != -1:
                     self.libc_path = ln[ln.find('/'):-1]
 
 
@@ -66,14 +71,14 @@ class ogt(gdb.Command):
         constraints = []
         for ln in lnlist:
             # fine one gagdet address
-            if ln.find('execve') is not -1:
+            if ln.find('execve') != -1:
                 # put last key: value in dictionary
-                if key is not 0:
+                if key != 0:
                     self.constraints[key] = constraints
                 key = int(ln[:ln.find(' ')], 16)
                 # flush constraints
                 constraints = []
-            if ln.find('==') is not -1:
+            if ln.find('==') != -1:
                 constraints.append(ln[2:])
 
         self.constraints[key] = constraints
